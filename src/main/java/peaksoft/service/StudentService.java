@@ -3,12 +3,10 @@ package peaksoft.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import peaksoft.dto.mapper.StudentMapper;
 import peaksoft.dto.request.AssignStudentToCourseRequest;
 import peaksoft.dto.request.StudentRequest;
-import peaksoft.dto.response.AssignStudentToCourseResponse;
 import peaksoft.dto.response.SimpleResponse;
 import peaksoft.dto.response.StudentResponse;
 import peaksoft.dto.search.StudentResponseView;
@@ -40,6 +38,7 @@ public class StudentService {
                         "Student with %d id not found", request.getCompanyId())
                 )
         );
+
         Student student = mapper.mapToEntity(request);
         company.addStudent(student);
         student.setCompany(company);
@@ -106,7 +105,7 @@ public class StudentService {
     }
 
 
-    public AssignStudentToCourseResponse assignStudentToCourse(AssignStudentToCourseRequest request) {
+    public StudentResponse assignStudentToCourse(AssignStudentToCourseRequest request) {
         Student student = getById(request.getStudentId());
         Course course = getCourseById(request.getCourseId());
         if (!student.getCompany().getId().equals(course.getCompany().getId())) {
@@ -119,11 +118,7 @@ public class StudentService {
         student.setCourse(course);
         courseRepository.save(course);
         studentRepository.save(student);
-        return new AssignStudentToCourseResponse(
-                "ASSIGN",
-                "Student with " + request.getStudentId() +
-                        " id is successfully assigned to " + request.getCourseId() + " id course!"
-        );
+        return mapper.mapToResponse(student);
     }
 
     public Student getById(Long id) {

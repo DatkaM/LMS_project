@@ -17,7 +17,7 @@ import static javax.persistence.CascadeType.*;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Course {
+public class  Course {
 
     @Id
     @SequenceGenerator(name = "course_gen", sequenceName = "course_seq", allocationSize = 1)

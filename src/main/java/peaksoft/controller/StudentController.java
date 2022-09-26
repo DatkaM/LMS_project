@@ -5,10 +5,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import peaksoft.dto.request.AssignStudentToCourseRequest;
 import peaksoft.dto.request.StudentRequest;
-import peaksoft.dto.response.AssignStudentToCourseResponse;
 import peaksoft.dto.response.SimpleResponse;
 import peaksoft.dto.response.StudentResponse;
 import peaksoft.dto.search.StudentResponseView;
+import peaksoft.entity.Student;
 import peaksoft.service.StudentService;
 
 @RestController
@@ -49,7 +49,7 @@ public class StudentController {
     }
 
     @PostMapping("/assignStudent")
-    public AssignStudentToCourseResponse assignStudentToCourse(@RequestBody AssignStudentToCourseRequest request) {
+    public StudentResponse assignStudentToCourse(@RequestBody AssignStudentToCourseRequest request) {
         return studentService.assignStudentToCourse(request);
     }
 

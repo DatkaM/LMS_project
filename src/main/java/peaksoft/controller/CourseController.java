@@ -2,15 +2,16 @@ package peaksoft.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import peaksoft.dto.request.AssignInstructorToCourseRequest;
 import peaksoft.dto.request.CourseRequest;
-import peaksoft.dto.response.AssignInstructorToCourseResponse;
 import peaksoft.dto.response.CourseResponse;
+import peaksoft.dto.response.InstructorResponse;
 import peaksoft.dto.response.SimpleResponse;
 import peaksoft.dto.search.CourseResponseView;
+import peaksoft.entity.User;
 import peaksoft.service.CourseService;
-import peaksoft.service.InstructorService;
 
 
 @RestController
@@ -46,22 +47,14 @@ public class CourseController {
     @PreAuthorize("hasAnyAuthority('ADMIN','INSTRUCTOR','STUDENT')")
     public CourseResponseView search(@RequestParam(name = "text", required = false) String text,
                                      @RequestParam int page,
-                                     @RequestParam int size) {
-        return courseService.search(text, page, size);
+                                     @RequestParam int size, Authentication a ) {
+        User user = (User) a.getPrincipal();
+        return courseService.search(text, page, size,user.getEmail());
     }
 
     @PostMapping("/assignInstructor")
-    public AssignInstructorToCourseResponse assignInstructorToCourse(@RequestBody AssignInstructorToCourseRequest request) {
+    public InstructorResponse assignInstructorToCourse(@RequestBody AssignInstructorToCourseRequest request) {
         return courseService.assignInstructorToCourse(request);
     }
 
-
 }
-/**
- * "courseName":"Js-6",
- * "dateOfStart":"2022-04-04",
- * "duration":"9-month",
- * "image":"image",
- * "description":"des",
- * "companyId":3
- */

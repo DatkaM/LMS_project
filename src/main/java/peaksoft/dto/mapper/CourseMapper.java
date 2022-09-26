@@ -6,6 +6,9 @@ import peaksoft.dto.request.CourseRequest;
 import peaksoft.dto.response.CourseResponse;
 import peaksoft.entity.Course;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class CourseMapper {
@@ -40,6 +43,15 @@ public class CourseMapper {
         course.setImage(request.getImage());
         course.setDescription(request.getDescription());
         return course;
+    }
+
+
+    public List<CourseResponse> mapToResponseList(List<Course> courses) {
+        List<CourseResponse> courseResponses = new ArrayList<>();
+        for (Course course : courses ) {
+            courseResponses.add(mapToResponse(course));
+        }
+        return courseResponses;
     }
 
 }

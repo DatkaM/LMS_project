@@ -14,14 +14,16 @@ import peaksoft.exceptions.BadRequestException;
 import peaksoft.repositories.StudentRepository;
 import peaksoft.security_mvc_file.jwt.JwtTokenUtil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Component
 @RequiredArgsConstructor
 public class StudentMapper {
     private final PasswordEncoder passwordEncoder;
-    private final StudentRepository studentRepository;
-    private final JwtTokenUtil tokenUtil;
+    private final CourseMapper courseMapper;
 
     public Student mapToEntity(StudentRequest request) {
         Student student = new Student();
@@ -42,6 +44,7 @@ public class StudentMapper {
         response.setId(student.getId());
         response.setFullName(student.getFirstName() + " " + student.getLastName());
         response.setEmail(student.getUser().getEmail());
+        response.setCourseResponse(courseMapper.mapToResponse(student.getCourse()));
         response.setRole(student.getUser().getRole());
         return response;
     }
@@ -58,4 +61,5 @@ public class StudentMapper {
         student.setUser(user);
         return student;
     }
+
 }

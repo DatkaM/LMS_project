@@ -5,10 +5,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import peaksoft.dto.mapper.CourseMapper;
+import peaksoft.dto.mapper.InstructorMapper;
 import peaksoft.dto.request.AssignInstructorToCourseRequest;
 import peaksoft.dto.request.CourseRequest;
-import peaksoft.dto.response.AssignInstructorToCourseResponse;
 import peaksoft.dto.response.CourseResponse;
+import peaksoft.dto.response.InstructorResponse;
 import peaksoft.dto.response.SimpleResponse;
 import peaksoft.dto.search.CourseResponseView;
 import peaksoft.entity.Company;
@@ -31,6 +32,7 @@ public class CourseService {
     private final CompanyRepository companyRepository;
     private final InstructorRepository instructorRepository;
     private final CourseMapper mapper;
+    private final InstructorMapper instructorMapper;
 
     public CourseResponse saveCourse(CourseRequest request) {
         Course course = mapper.mapToEntity(request);
@@ -72,10 +74,10 @@ public class CourseService {
         return mapper.mapToResponse(courseRepository.save(course1));
     }
 
-    public CourseResponseView search(String text, int page, int size) {
+    public CourseResponseView search(String text, int page, int size,String email) {
         CourseResponseView view = new CourseResponseView();
         Pageable pageable = PageRequest.of(page - 1, size);
-        view.setResponses(courseResponses(getCourses(text, pageable)));
+        view.setResponses(courseResponses(getCourses(text, pageable,email)));
         return view;
     }
 
@@ -87,27 +89,25 @@ public class CourseService {
         return responses;
     }
 
-    private List<Course> getCourses(String text, Pageable pageable) {
+    private List<Course> getCourses(String text, Pageable pageable,String email) {
         String s = text == null ? "" : text;
-        return courseRepository.getAll(s.toUpperCase(), pageable);
+        return courseRepository.getAll(s.toUpperCase(), pageable,email);
     }
 
 
-    public AssignInstructorToCourseResponse assignInstructorToCourse(AssignInstructorToCourseRequest request) {
+    public InstructorResponse assignInstructorToCourse(AssignInstructorToCourseRequest request) {
         Instructor instructor = getInstructorById(request.getInstructorId());
         Course course = getCourseById(request.getCourseId());
         if (!instructor.getCompany().getId().equals(course.getCompany().getId())) {
-            throw new BadRequestException("Instructor and course are in DIFFERENT companies!");
+            throw new BadRequestException(
+                    "Instructor and course are in DIFFERENT companies!"
+            );
         }
         instructor.addCourse(course);
         course.addInstructor(instructor);
         instructorRepository.save(instructor);
         courseRepository.save(course);
-        return new AssignInstructorToCourseResponse(
-                "ASSIGN",
-                "Instructor with " + request.getInstructorId() +
-                        " id successfully assigned to " + request.getCourseId() +
-                        " id course");
+        return instructorMapper.mapToResponse(instructor);
     }
 
     private Course getCourseById(Long id) {
